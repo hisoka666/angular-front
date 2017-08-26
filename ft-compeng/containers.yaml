@@ -1,0 +1,8 @@
+version: v1beta2
+containers:
+- name: docker-ft
+  image: hisoka666/docker-test
+  ports:
+  - name: http
+    hostPort: 80
+    containerPort: 9090
