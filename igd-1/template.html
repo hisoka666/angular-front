@@ -1,0 +1,846 @@
+{{define "basic-template"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>IGDSanglah.com</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://www.gstatic.com/firebasejs/6.0.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.0.2/firebase-auth.js"></script>
+    <script src="https://storage.googleapis.com/script-igdsanglah/scripts/allforone.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://storage.googleapis.com/script-igdsanglah/scripts/style.css">
+    <link rel="stylesheet" href="https://storage.googleapis.com/script-igdsanglah/scripts/w3.css">
+    <link rel="stylesheet" href="https://storage.googleapis.com/script-igdsanglah/scripts/w3-theme-blue-grey.css">
+    <script src="https://cdn.rawgit.com/serratus/quaggaJS/0420d5e0/dist/quagga.min.js"></script>
+</head>
+<body>
+<div class="w3-bar w3-theme-l4">
+    <h2 class="w3-bar-item w3-mobile w3-xlarge">IGDSanglah.com</h2>
+    <h6 class="w3-bar-item w3-mobile w3-tiny w3-right">Tools Penghitung IKI Dokter Fasttrack</h6>
+</div>
+<div id="content">
+</div>
+<div class="w3-modal" id="modal-warning">
+    <div class="w3-modal-content">
+        <div class="w3-card">
+            <header class="w3-container w3-theme-d2 w3-center">
+                <h1>Peringatan!</h1>
+            </header>
+            <div class="w3-container-w3-theme-l2 w3-center">
+                <p id="warning-message"></p>
+            </div>
+            <div class="w3-container w3-theme-d2">
+                <button class="w3-btn w3-round" onclick="document.getElementById('modal-warning').style.display='none'">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="w3-modal" id="loading-animation">
+    <div class="w3-modal-content">
+        <div class="w3-container">
+            <div id="loader"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+{{end}}
+
+
+
+{{define "login"}}
+<div class="w3-display-container">
+    <div class="w3-card-4 w3-center w3-display-topmiddle w3-mobile">
+            <header class="w3-container w3-theme-d4">
+                <h3>Login</h3>
+            </header>
+            <div class="w3-container w3-theme-l5">
+                    <input type="text" name="" class="w3-input w3-border w3-margin-top" id="username" placeholder="Masukkan email...">
+                    <input type="password" name="" id="pass" class="w3-input w3-border w3-margin-top" placeholder="Password...">
+                    <button type="submit" class="w3-button w3-border w3-margin-top" onclick="logIn()">Login</button>
+                    <h6>Belum terdaftar? Hubungi admin di 081338775193</h6>
+            </div>
+    </div>
+</div>
+{{end}}
+
+
+{{define "home"}}
+
+{{if .Admin}}
+<div class="w3-bar w3-theme-d2" id="nav-bar">
+    <a href="#" id="bar01" class="w3-bar-item w3-button w3-mobile" onclick="goToHome()">Home</a>
+    <a href="#" id="bar02" class="w3-bar-item w3-button w3-mobile" onclick="goToBCP()">BCP</a>
+    <a href="#" id="bar03" class="w3-bar-item w3-button w3-mobile" onclick="goToKegiatan()">Kegiatan Dokter</a>
+    <a href="#" id="bar04" class="w3-bar-item w3-button w3-mobile" onclick="goToObat()">Obat</a>
+    <a href="#" id="bar-admin" class="w3-bar-item w3-button w3-mobile" onclick="document.getElementById('modal-tambah-staf').style.display='block'">Tambah Anggota</a>
+    <a href="#" id="bar05" class="w3-bar-item w3-button w3-mobile w3-right" onclick="getProfilePage()">Profil</a>
+    <a href="#" id="bar06" class="w3-bar-item w3-button w3-mobile w3-right">Pencarian</a>
+</div>
+<div id="modal-tambah-staf" class="w3-modal">
+    <div class="w3-modal-content w3-theme-l4 w3-card">
+        <header class="w3-container w3-theme-d1 w3-center">
+            <h3>Tambah Dokter</h3>
+        </header>
+        <div class="w3-container w3-padding">
+        <label for="">Nama</label>
+        <input type="text" class="w3-input w3-border" id="nama-dokter">
+        <label for="">Email</label>
+        <input id="email-dokter" type="text" class="w3-input w3-border"><br>
+        <label for="">Password</label>
+        <input type="password" name="" id="pass1" class="w3-input w3-border" onkeyup="checkPass1()">
+        <span id="warning1" class="w3-text-red w3-tiny"></span> <br>
+        <label for="">Konfirmasi Password</label>
+        <input type="password" name="" id="pass2" class="w3-input w3-border" onkeyup="checkPass2()">
+        <span id="warning2" class="w3-text-red w3-tiny"></span> <br>
+        <button class="w3-btn w3-theme-d2" onclick="tambahDokter()">Tambah</button>
+        <button class="w3-btn w3-red w3-right" onclick="document.getElementById('modal-tambah-staf').style.display = 'none'">Tutup</button>
+      </div>
+    </div>
+  </div>
+{{else}}
+<div class="w3-bar w3-theme-d2" id="nav-bar">
+    <a href="#" id="bar01" class="w3-bar-item w3-button w3-mobile" onclick="goToHome()">Home</a>
+    <a href="#" id="bar02" class="w3-bar-item w3-button w3-mobile" onclick="goToBCP()">BCP</a>
+    <a href="#" id="bar03" class="w3-bar-item w3-button w3-mobile" onclick="goToKegiatan()">Kegiatan Dokter</a>
+    <a href="#" id="bar04" class="w3-bar-item w3-button w3-mobile" onclick="goToObat()">Obat</a>
+    <a href="#" id="bar05" class="w3-bar-item w3-button w3-mobile w3-right" onclick="getProfilePage()">Profil</a>
+    <a href="#" id="bar06" class="w3-bar-item w3-button w3-mobile w3-right">Pencarian</a>
+</div>
+{{end}}
+
+{{template "calendar" .}}
+<div class="w3-container w3-center">
+    <h3>Selamat Datang,</h3>
+    <h6 id="email"></h6>
+    <button class="w3-button" onclick="logOut()">Log Out</button>
+</div>
+<div class="w3-container" id="main-page">
+    {{template "input-no-cm"}}
+    
+</div>
+{{end}}
+{{define "calendar"}}
+<div id="calendar"></div>
+<span id="cal-bali" hidden>{{.Kalender}}</span>
+{{end}}
+{{define "input-no-cm"}}
+<div class="w3-row w3-container w3-hide-large w3-hide-medium w3-center">
+    <div class="w3-col s9">
+        <input type="text" name="" id="get-no-cm-small" class="w3-input w3-border w3-round" placeholder="Ketik No.CM atau scan" onkeyup="sendNoCM()">
+    </div>
+    <div class="w3-col s3">
+        <input type="button" value="Barcode" id="barcode-btn" class="w3-button w3-round" onclick="startBarcodeScan()">
+        <!-- <a href="#" class="w3-button w3-right" id="barcode-btn"><i class="fa fa-barcode" aria-hidden="true"></i></a> -->
+    </div>
+    <div class="w3-center viewport" id="interactive">
+        <video src="" autoplay="true" preload="auto" muted="true" playsinline="true"></video>
+        <canvas #canvas class="drawingBuffer"></canvas>
+        <!-- <div id="scanner-container"></div> -->
+    </div> 
+</div>
+<div class="w3-container w3-hide-small">
+    <input type="text" name="" id="get-no-cm-large" class="w3-input w3-border w3-round" placeholder="Masukkan Nomor CM..." onkeyup="sendNoCM()">
+</div>
+<div class="w3-container w3-padding">
+    <div class="w3-panel w3-orange w3-round" id="warning-no-cm" hidden>
+        <p id="warning-msg" class="w3-left">Nomor CM kurang</p>
+        <span onclick="this.parentElement.style.display='none'" class="w3-button w3-right w3-orange">&times;</span>
+    </div>
+</div>
+<div class="w3-container" id="form-input-pasien">
+</div>
+{{end}}
+
+{{define "profil"}}
+
+<div class="w3-container">
+    <div class="w3-row">
+        <div class="w3-col w3-container m3 l4"></div>
+            <div class="w3-col m6 l4">
+            
+        {{if .Admin}}
+        <div class="w3-card-4 w3-center w3-mobile">
+            <header class="w3-container w3-theme-d4">
+                <h3>Profil</h3>
+            </header>
+            <div class="w3-container">
+                    <img src="https://storage.cloud.google.com/script-igd-ft/avatar.png" alt="Avatar" class="w3-center w3-padding" style="width:100%;max-width:200px">
+            </div>
+            <div class="w3-container w3-center">
+                <table class="w3-tables w3-left-align">
+                    <tr>
+                        <td>Nama</td>
+                        {{if .Admin.NamaLengkap}}
+                        <td>: <span id="nama-dokter">{{.Admin.NamaLengkap}}</span></td>
+                        {{else}}
+                        <td>: <span id="nama-dokter">Belum diisi...</span></td>
+                        {{end}}
+                    </tr>
+                    <tr>
+                        <td>NIP</td>
+                        {{if .Admin.NIP}}
+                        <td>: <span id="nip-dokter">{{.Admin.NIP}}</span></td>
+                        {{else}}
+                        <td>: <span id="nip-dokter">Belum diinput...</span></td>
+                        {{end}}
+                    </tr>
+                    <tr>
+                        <td>Golongan</td>
+                        {{if .Admin.NIP}}
+                        <td>: {{.Admin.GolonganPNS}}</td>
+                        {{else}}
+                        <td>: <span>Belum diisi...</span></td>
+                        {{end}}
+                    </tr>
+                    <tr>
+                        <td>Tempat Kerja</td>
+                        {{if .Admin.Bagian}}
+                        <td>: {{.Admin.Bagian}}</td>
+                        {{else}}
+                        <td>: <span>Belum diisi...</span></td>
+                        {{end}}
+                    </tr>
+                </table>
+            </div>
+            <div class="w3-container w3-padding">
+                <button class="w3-button w3-theme-d2" onclick="gantiFotoProfil()">Ganti Foto</button>
+                <button class="w3-button w3-theme-d2" onclick="ubahDetail()">Ubah Detail</button>
+                <button class="w3-button w3-theme-d2" onclick="ubahPassword()">Ganti Password</button>
+            </div>
+    </div>
+    &nbsp;
+    <div class="w3-container w3-card-4 w3-center w3-mobile w3-padding-24 w3-responsive">
+        <header class="w3-container w3-theme-d3">
+            <h3>Anggota Staf IGD</h3>
+        </header>
+        
+            <table class="w3-table-all" id="tabel-dokter">
+                <tr class="w3-theme-l1">
+                    <th>No</th>
+                    <th>Nama Staf</th>
+                    <th>Peran</th>
+                    <th></th>
+                </tr>
+                {{with .Member}}
+                    {{range $m, $n := .}}
+                    <tr>
+                        <td>{{inc $m}}</td>
+                        <td>{{propercaps $n.NamaLengkap}}</td>
+                        <td>{{propercaps $n.Peran}}</td>
+                        <td><button type="submit" id="admin-hapus-staf" data-link="{{$n.LinkID}}" class="w3-button w3-round w3-blue" onclick="hapusStaf(this)">Hapus</button></td>
+                    </tr>
+                    {{end}}
+                {{end}}
+            </table>
+        
+    </div>
+    {{template "modal-profil" .Admin}}
+{{else}}
+
+        <div class="w3-card-4 w3-center w3-mobile">
+            <header class="w3-container w3-theme-d4">
+                <h3>Profil</h3>
+            </header>
+            <div class="w3-container">
+                    <img src="https://storage.cloud.google.com/script-igd-ft/avatar.png" alt="Avatar" class="w3-center w3-padding" style="width:100%;max-width:200px">
+            </div>
+            <div class="w3-container">
+                <table class="w3-tables w3-left-align">
+                    <tr>
+                        <td>Nama</td>
+                        {{if .NamaLengkap}}
+                        <td>: {{.NamaLengkap}}</td>
+                        {{else}}
+                        <td>: <span id="dokter-namapegawai">Belum diisi...</span></td>
+                        {{end}}
+                    </tr>
+                    <tr>
+                        <td>NIP</td>
+                        {{if .NIP}}
+                        <td>: {{.NIP}}</td>
+                        {{else if .NPP}}
+                        <td>: {{.NPP}}</td>
+                        {{else}}
+                        <td>: <span id="dokter-nomorpegawai">Belum diisi...</span></td>
+                        {{end}}
+                    </tr>
+                    <tr>
+                        <td>Golongan</td>
+                        {{if .NIP}}
+                        <td>: {{.GolonganPNS}}</td>
+                        {{else if .NPP}}
+                        <td>: Tidak ada Golongan</td>
+                        {{else}}
+                        <td>: <span id="dokter-gol">Belum diisi...</span></td>
+                        {{end}}
+                    </tr>
+                    <tr>
+                        <td>Tempat Kerja</td>
+                        {{if .Bagian}}
+                        <td>: {{.Bagian}}</td>
+                        {{else}}
+                        <td>: <span id="dokter-tempatkerja">Belum diisi...</span></td>
+                        {{end}}
+                    </tr>
+                </table>
+            </div>
+            <div class="w3-container w3-padding">
+                <button class="w3-button w3-theme-d2" onclick="gantiFotoProfil()">Ganti Foto</button>
+                <button class="w3-button w3-theme-d2" onclick="ubahDetail()">Ubah Detail</button>
+                <button class="w3-button w3-theme-d2" onclick="ubahPassword()">Ganti Password</button>
+            </div>
+            
+            
+    </div>
+
+    {{template "modal-profil" .}}
+        {{end}}
+        
+    </div>
+    </div>
+    <p></p>
+    <div class="w3-col m3 l4"></div>
+    </div>
+    </div>
+
+    
+{{end}}
+
+
+{{define "modal-profil"}}
+
+<div id="modal-edit-detail" class="w3-modal">
+    <div class="w3-card w3-center w3-modal-content w3-theme-l4">
+        <header class="w3-container w3-theme-d1 w3-center">
+            <h3>Ubah Detail</h3>
+        </header>
+        <div class="w3-container w3-left-align w3-padding">
+            <label for="">Nama Lengkap</label>
+            {{if .NamaLengkap}}
+            <input id="namalengkap" type="text" class="w3-input w3-border" value="{{.NamaLengkap}}"><br>
+            {{else}}
+            <input id="namalengkap" type="text" class="w3-input w3-border"><br>
+            {{end}}
+            <label for="">Nomor Pegawai</label>
+            {{if .NIP}}
+            <input id="nomorpegawai" type="text" class="w3-input w3-border" value="{{.NIP}}"><br>
+            {{else if .NPP}}
+            <input id="nomorpegawai" type="text" class="w3-input w3-border" value="{{.NPP}}"><br>
+            {{else}}
+            <input id="nomorpegawai" type="text" class="w3-input w3-border"><br>
+            {{end}}
+            <label for="">Status Kepegawaian</label>
+
+            {{if .NIP}}
+            <input type="radio" name="status" id="status-pns" class="w3-radio" value="1" onclick="handleStatus(this)" checked>
+            <label for="">PNS</label>
+            <input type="radio" name="status" id="status-blu" class="w3-radio" value="2" onclick="handleStatus(this)">
+            <label for="">BLU</label>
+            <input type="radio" name="status" id="status-kontrak" class="w3-radio" value="3" onclick="handleStatus(this)">
+            <label for="">Kontrak</label><br>
+            {{else}}
+            <input type="radio" name="status" id="status-pns" class="w3-radio" value="1" onclick="handleStatus(this)">
+            <label for="">PNS</label>
+            <input type="radio" name="status" id="status-blu" class="w3-radio" value="2" onclick="handleStatus(this)" checked>
+            <label for="">BLU</label>
+            <input type="radio" name="status" id="status-kontrak" class="w3-radio" value="3" onclick="handleStatus(this)">
+            <label for="">Kontrak</label><br>
+            {{end}}
+            <label for="">Tanggal Lahir</label>
+            {{if .TanggalLahir}}
+            <input id="tgllahir" type="date" class="w3-input w3-border" value="{{strtgl .TanggalLahir}}"><br>
+            {{else}}
+            <input id="tgllahir" type="date" class="w3-input w3-border"><br>
+            {{end}}
+            <label for="">Tempat Tugas</label>
+            {{if .Bagian}}
+            <input id="bagian" type="text" class="w3-input w3-border" value="{{.Bagian}}"><br>
+            {{else}}
+            <input id="bagian" type="text" class="w3-input w3-border"><br>
+            {{end}}
+            {{if .NIP}}
+            <div id="gol-pns" style="display:block">
+                <label for="">Golongan PNS</label>
+                <input type="text" id="gol-pns-val" class="w3-input w3-border" value="{{.GolonganPNS}}">
+            </div><br>
+            {{else}}
+            <div id="gol-pns" style="display:none">
+                <label for="">Golongan PNS</label>
+                <input type="text" id="gol-pns-val" class="w3-input w3-border">
+            </div><br>
+            {{end}}
+            <label for="">Target IKI</label>
+            {{if .TargetIKI}}
+            <input type="text" name="" id="target-iki" class="w3-input w3-border" value="{{angk .TargetIKI}}"><br>
+            {{else}}
+            <input type="text" name="" id="target-iki" class="w3-input w3-border"><br>
+            {{end}}
+            <span id="link-id-dokter" hidden>{{.LinkID}}</span>
+            <button class="w3-btn w3-theme-d2" onclick="tutupModal('modal-edit-detail')">Batal</button>
+            <button class="w3-btn w3-theme-d2" onclick="simpanDetail()">Simpan</button>
+        </div>
+    </div>
+</div>
+{{end}}
+
+{{define "daftar"}}
+<div class="w3-container w3-center">
+    <h3>Silahkan isi email dan password</h3>
+    <input type="text" name="" id="nama" class="w3-input" placeholder="Masukkan nama...">
+    <input type="email" name="" id="email" class="w3-input" placeholder="Masukkan alamat email...">
+    <input type="password" name="" id="pass1" class="w3-input" onkeyup="checkPass1()" placeholder="Masukkan password..."> <div class="w3-tiny w3-text-red" id="pass1-alert"></div>
+    <input type="password" name="" id="pass2" class="w3-input" onkeyup="checkPass2()" placeholder="Masukkan password sekali lagi..."> <div class="w3-tiny w3-text-red" id="pass2-alert"></div>
+    <button type="submit" id="subbtn" class="w3-button" onclick="registerBaru()">Daftar</button>
+    <button type="reset" class="w3-button w3-right-align"onclick="document.getElementById(''">Tutup</button>    
+</div>
+{{end}}
+
+
+{{define "input-pts"}}
+<p></p>
+<div class="w3-card w3-mobile">
+    <header class=" w3-padding w3-theme-d3 w3-center">
+        <h3>Input Pasien</h3>
+    </header>
+
+<div class="w3-padding">
+<label for="">Nama Pasien</label>
+{{if eq .NewData.NamaPasien ""}}
+<input class="w3-input w3-border" type="text" name="" id="nama-pasien">
+{{else}}
+<input class="w3-input w3-border" type="text" name="" id="nama-pasien" value="{{propercaps .NewData.NamaPasien}}">
+{{end}}
+<p></p>
+<label for="">Tanggal Lahir</label>
+{{if istimezero .NewData.TglLahir}}
+<input class="w3-input w3-border" type="date" name="" id="tanggal-lahir-pasien" value="">
+{{else}}
+<input class="w3-input w3-border" type="date" name="" id="tanggal-lahir-pasien" value="{{strtgl .NewData.TglLahir}}">
+{{end}}
+<p></p>
+<label for="">Diagnosis</label>
+<input type="text" class="w3-input w3-border" id="diagnosis">
+<p></p>
+<label for="">ATS</label>
+<select name="" id="ats" class="w3-select w3-border">
+    <option value="0" selected disabled>Pilih ATS...</option>
+    <option value="1">ATS 1</option>
+    <option value="2">ATS 2</option>
+    <option value="3">ATS 3</option>
+    <option value="4">ATS 4</option>
+    <option value="5">ATS 5</option>
+</select>
+<p></p>
+<label for="">Bagian</label>
+<select name="" id="bagian" class="w3-select w3-border">
+    <option value="0" selected disabled>Pilih Bagian...</option>
+    <option value="15">Paru</option>
+    <option value="1">Interna</option>
+    <option value="2">Bedah</option>
+    <option value="3">Anak</option>
+    <option value="4">Obgyn</option>
+    <option value="5">Saraf</option>
+    <option value="6">Anestesi</option>
+    <option value="7">Psikiatri</option>
+    <option value="8">THT</option>
+    <option value="9">Kulit/Kelamin</option>
+    <option value="10">Jantung</option>
+    <option value="11">Umum</option>
+    <option value="12">Mata</option>
+    <option value="13">MOD</option>
+    <option value="14">Wing Amerta</option>
+</select>
+<p></p>
+<label for="">IKI</label>
+<select name="" id="iki" class="w3-select w3-border">
+    <option value="0" selected disabled>Pilih IKI...</option>
+    <option value="1">IKI 1</option>
+    <option value="2">IKI 2</option>
+</select>
+<p></p>
+<label for="">Shift Jaga</label>
+<select name="" id="shift-jaga" class="w3-select w3-border">
+    <option value="0" selected disabled>Pilih shift jaga...</option>
+    <option value="1">Pagi</option>
+    <option value="2">Sore</option>
+    <option value="3">Malam</option>
+</select>
+<p></p>
+<input type="checkbox" name="" id="kegiatan-dokter-checkbox" class="w3-check" onclick="checkedKegiatan()">
+<label for="">Input Kegiatan Dokter</label>
+<p></p>
+<span id="tambah-kegiatan-dokter-input"></span>
+<p></p>
+<button class="w3-button w3-border" id="tambah-entri-kunjungan" data-link="" onclick="tambahDataKunjungan.call(this)">Tambah Kunjungan</button>
+<span id="old-data" hidden>{{strjson .OldData}}</span>
+</div>
+</div>
+{{end}}
+
+
+{{define "pilih-bulan"}}
+<p>Data Kunjungan Tidak Ditemukan. Silahkan Pilih Bulan dan Tahun Kunjungan Yang Lain</p>
+<input type="month" name="" id="list-bcp-bulan-modal" placeholder="YYYY-MM">
+<a href="#" class="w3-btn" id="cari-bcp-bulan" onclick="cariBCPBulan(document.getElementById('list-bcp-bulan-modal').value),document.getElementById('modal-warning').style.display='none'"><i class="fa fa-search"></i></a>
+{{end}}
+
+
+{{define "tabel-bcp"}}
+
+<div class="w3-center w3-theme-dark">
+    <div class="w3-row">
+        <div class="w3-container">
+            <div class="w3-bar">
+                <span class="w3-mobile w3-bar-item">Daftar kegiatan bulan:</span>
+                <input class="w3-input w3-bar-item w3-mobile" type="month" name="" id="list-bcp-bulan" placeholder="YYYY-MM">
+                <a href="#" class="w3-bar-item w3-hover-grey w3-mobile" id="cari-bcp-bulan" onclick="cariBCPBulan(document.getElementById('list-bcp-bulan').value)"><i class="fa fa-search"></i></a>
+                <span id="cari-bulan" hidden></span>
+            </div>
+        </div>
+    </div>
+        
+    </div>
+<div class="w3-card w3-hide-large w3-hide-medium">
+    <div class="w3-center w3-theme-dark">
+        <span class="w3-xlarge">BCP Bulan: {{gettgl .TabelPasien}}</span>&nbsp;<a href="#" onclick="getPDF()">(Buat BCP)</a>
+        
+        <button class="w3-block w3-button w3-theme-dark" data-iden="tabel-iki" onclick="openContent.call(this)">Total IKI : {{totaliki .BCP}}</button>
+    </div>
+    <div class="w3-row w3-hide" id="tabel-iki">
+        <table class="w3-table-all">
+            <tr class="w3-blue">
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>IKI 1</th>
+                <th>IKI 2</th>
+            </tr>
+            {{$number := 1}}
+                {{range $m, $n := .BCP}}
+                    {{if or (ne $n.IKI1 0) (ne $n.IKI2 0)}}
+                    <tr>
+                        <td class="no-urut-tabel-iki-small">{{$number}}</td>
+                        <td>{{tgliki $n.Tanggal}} {{convstrjaga $n.Shift}}</td>
+                        <td>{{$n.IKI1}}</td>
+                        <td>{{$n.IKI2}}</td>
+                    </tr>
+                    {{$number = (inc $number)}}
+                    {{end}}
+                {{end}}
+        </table>
+    </div>
+            <div class="w3-row">
+                <div class="w3-col s1 w3-theme-d3 w3-center"><h5>No</h5></div>
+                <div class="w3-col s11 w3-theme-d3 w3-center"><h5>Pasien</h5></div>
+            </div>
+            {{range $m, $n := .TabelPasien}}
+            <div class="w3-row">
+                <div class="w3-col s1 w3-center" style="padding-top:9px">{{inc $m}}</div>
+                <div class="w3-col s11"><button class="w3-block w3-button w3-left-align w3-theme-d2" data-iden="content-{{inc $m}}"onclick="openContent.call(this)">(<span>{{$n.NoCM}}</span>) <span>{{propercaps $n.NamaPasien}}</span></button></div>
+            </div>
+            <div class="w3-row w3-hide" id="content-{{inc $m}}" >
+                <div class="w3-col s12 w3-padding w3-theme-l3">
+                        <p>Datang ke UGD: {{strtglhari $n.TglKunjungan}}</p>
+                        <p>Diagnosis: <span>{{properdiag $n.Diagnosis}}</span></p>
+                        <p>ATS: {{$n.ATS}} IKI: {{$n.IKI}} ({{convstrjaga $n.ShiftJaga}})</p>
+                        <select name="" id="modify-data-kunjungan" data-link="{{$n.LinkID}}" class="w3-select w3-round w3-border" onchange="modifyEntri.call(this)">
+                            <option value="0" selected disabled>Pilih salah satu...</option>
+                            <option value="1">Edit data</option>
+                            <option value="2">Hapus data</option>
+                            <option value="3">Ubah tanggal</option>
+                            <option value="4">Detail pasien</option>
+                            <option value="5">Tambah Kegiatan Dokter</option>
+                        </select>
+                </div>
+            </div>
+            {{end}}
+</div>
+
+<div class="w3-card w3-hide-small">
+    <div class="w3-center w3-theme-dark">
+        <span class="w3-xlarge">BCP Bulan: {{gettgl .TabelPasien}}</span>&nbsp;<a href="#" onclick="getPDF()">(Buat BCP)</a>
+       
+        <button class="w3-block w3-button w3-theme-dark" data-iden="tabel-iki-large" onclick="openContent.call(this)">Total IKI : {{totaliki .BCP}}</button>
+    </div>
+    <div class="w3-row w3-hide" id="tabel-iki-large">
+        <table class="w3-table-all">
+            <tr class="w3-blue">
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>IKI 1</th>
+                <th>IKI 2</th>
+            </tr>
+            {{$nomor := 1}}
+            {{range $m, $n := .BCP}}
+                {{if or (ne $n.IKI1 0) (ne $n.IKI2 0)}}
+                <tr>
+                    <td class="no-urut-tabel-iki-large">{{$nomor}}</td>
+                    <td>{{tgliki $n.Tanggal}} {{convstrjaga $n.Shift}}</td>
+                    <td>{{$n.IKI1}}</td>
+                    <td>{{$n.IKI2}}</td>
+                </tr>
+                {{$nomor = (inc $nomor)}}
+                {{end}}
+            {{end}}
+        </table>
+    </div>
+    <table class="w3-table-all">
+        <tr class="w3-theme-d3">
+            <th>No</th>
+            <th>Tanggal</th>
+            <th>No. CM</th>
+            <th>Nama</th>
+            <th>Diagnosis</th>
+            <th>IKI 1</th>
+            <th>IKI 2</th>
+        </tr>
+        {{range $m, $n := .TabelPasien}}
+        <tr>
+            <td>{{inc $m}}</td>
+            <td><select name="" id="" data-link="{{$n.LinkID}}" data-tgl="{{tgljscript $n.TglKunjungan}}"class="w3-select w3-block" onchange="modifyEntri.call(this)">
+                <option value="0" selected disabled>{{strtglhari $n.TglKunjungan}} - {{convstrjaga $n.ShiftJaga}}</option>
+                <option value="1">Edit data</option>
+                <option value="2">Hapus data</option>
+                <option value="3">Ubah tanggal</option>
+                <option value="4">Detail pasien</option>
+                <option value="5">Tambah Kegiatan Dokter</option>
+            </select></td>
+            <td>{{$n.NoCM}}</td>
+            <td>{{propercaps $n.NamaPasien}}</td>
+            <td>{{properdiag $n.Diagnosis}}</td>
+            {{if eq $n.IKI "1"}}
+            <td>&#x2714;</td>
+            <td></td>
+            {{else}}
+            <td></td>
+            <td>&#x2714;</td>
+            {{end}}
+        </tr>
+        {{end}}
+    </table>
+</div>
+
+<div id="modal-bcp" class="w3-modal">
+    <div class="w3-modal-content w3-theme-l4 w3-card">
+        <header class="w3-container w3-theme-d1 w3-center">
+            <h3 id="modal-bcp-header"></h3>
+        </header>
+        <div class="w3-container w3-padding" id="modal-bcp-content">
+        </div>
+    </div>
+  </div>
+
+<div id="modal-bcp-hapus" class="w3-modal">
+    <div class="w3-modal-content w3-theme-l4 w3-card">
+        <header class="w3-container w3-theme-d1 w3-center">
+            <h3 id="modal-bcp-hapus-header">Hapus entri ini?</h3>
+        </header>
+        <div class="w3-container w3-padding" id="modal-bcp-content-hapus">
+            <table class="w3-table">
+                <tr>
+                    <td>Nama</td>
+                    <td id="nama-del"></td>
+                </tr>
+                <tr>
+                    <td>No. CM</td>
+                    <td id="no-cm-del"></td>
+                </tr>
+                <tr>
+                    <td>Diagnosis</td>
+                    <td id="diag-del"></td>
+                </tr>
+            </table>
+            <span id="pts-id" hidden></span>
+            <button class="w3-btn w3-border w3-round w3-theme-d3" onclick="document.getElementById('modal-bcp-hapus').style.display='none'">Tutup</button><button class="w3-btn w3-border w3-round w3-right w3-red" onclick="hapusEntriKunjunganPasien()">Hapus</button>
+        </div>
+    </div>
+</div>
+
+<div id="modal-bcp-ubah-tanggal" class="w3-modal">
+    <div class="w3-modal-content w3-theme-l4 w3-card">
+        <header class="w3-container w3-theme-d1 w3-center">
+            <h3>Ubah Tanggal Kunjungan</h3>
+        </header>
+        <div class="w3-container w3-padding">
+            <p>Ubah tanggal kunjungan untuk:</p>
+            <table class="w3-table">
+                <tr>
+                    <td>Nama</td>
+                    <td id="nama-kun"></td>
+                </tr>
+                <tr>
+                    <td>No. CM</td>
+                    <td id="no-cm-kun"></td>
+                </tr>
+                <tr>
+                    <td>Diagnosis</td>
+                    <td id="diag-kun"></td>
+                </tr>
+            </table>
+            <p>menjadi:</p>
+            <input type="date" name="" id="ubah-tgl" class="w3-input w3-border">
+            <p></p>
+            <input type="radio" name="shift" id="" class="w3-radio" value="1">
+            <label for="">Shift Pagi</label>
+            <input type="radio" name="shift" id="" class="w3-radio" value="2">
+            <label for="">Shift Siang</label>
+            <input type="radio" name="shift" id="" class="w3-radio" value="3">
+            <label for="">Shift Malam</label>
+            <p></p>
+            <span id="pts-id-kun" hidden></span>
+            <button class="w3-btn w3-round w3-theme-d3" onclick="document.getElementById('modal-bcp-ubah-tanggal').style.display = 'none'">Tutup</button><button class="w3-btn w3-round w3-red w3-right" onclick="ubahTanggalKunjungan()">Simpan</button>
+        </div>
+    </div>
+</div>
+
+<form action="/get-pdf-bcp" method="post" id="bcp-pdf-form" hidden>
+    <input type="text" name="email" id="bcp-pdf-email">
+    <input type="text" name="tanggal" id="bcp-pdf-bulan">
+</form>
+
+<div id="modal-bcp-detail" class="w3-modal">
+    <div class="w3-modal-content w3-theme-l4 w3-card">
+        <header class="w3-container w3-theme-d1 w3-center">
+            <h3 id="modal-bcp-header">Detail Pasien</h3>
+        </header>
+        <div class="w3-container w3-padding" id="modal-bcp-content-detail">
+        </div>
+        <footer class="w3-container w3-theme-d1 w3-padding">
+            <button class="w3-btn w3-border w3-grey" onclick="document.getElementById('modal-bcp-detail').style.display='none'">Tutup</button>
+            <button class="w3-btn w3-border w3-red w3-right" id="but-edit-ubah" onclick="butUbahDetail()">Edit</button>
+            <button class="w3-btn w3-border w3-red w3-right" id="but-edit-simpan" onclick="butSimpanDetail()" hidden>Simpan</button>
+        </footer>
+    </div>
+  </div>
+
+  <div id="modal-kegiatan-dokter" class="w3-modal">
+      <div class="w3-modal-content w3-theme-l4 w3-card">
+          <header class="w3-container w3-theme-d1 w3-center w3-padding">
+              <h3>Tambah Kegiatan Dokter</h3>
+            </header>
+          <div class="w3-container w3-padding">
+            <p>Tambah kegiatan untuk:</p>
+            <table class="w3-table">
+                <tr>
+                    <td>Nama</td>
+                    <td id="nama-keg"></td>
+                </tr>
+                <tr>
+                    <td>No. CM</td>
+                    <td id="no-cm-keg"></td>
+                </tr>
+                <tr>
+                    <td>Diagnosis</td>
+                    <td id="diag-keg"></td>
+                </tr>
+            </table>
+            <p></p>
+            <input type="text" name="" id="kegiatan-dok" class="w3-input w3-border w3-round">
+            <span id="pts-id-keg" hidden></span>
+          </div>
+          <footer class="w3-container w3-theme-d1 w3-padding">
+            <button class="w3-btn w3-border w3-grey" onclick="document.getElementById('modal-kegiatan-dokter').style.display='none'">Tutup</button>
+            <button class="w3-btn w3-border w3-red w3-right" id="but-kegiatan-simpan" onclick="butSimpanKegiatan()" hidden>Simpan</button>
+        </footer>
+      </div>
+  </div>
+{{end}}
+
+{{define "edit-pasien"}}
+<p>Nama Pasien: <span id="nama-pasien"></span></p>
+<p>No. CM: <span id="no-cm"></span></p>
+<p></p>
+<input type="text" name="" id="diagnosis" class="w3-input w3-border w3-round" value="{{properdiag .Diagnosis}}">
+<p></p>
+<select name="" id="ats" class="w3-select w3-round w3-border">
+    <option value="0" selected disabled>Pilih ATS...</option>
+    <option value="1" {{if eq .ATS "1"}} selected {{end}}>ATS 1</option>
+    <option value="2" {{if eq .ATS "2"}} selected {{end}}>ATS 2</option>
+    <option value="3" {{if eq .ATS "3"}} selected {{end}}>ATS 3</option>
+    <option value="4" {{if eq .ATS "4"}} selected {{end}}>ATS 4</option>
+    <option value="5" {{if eq .ATS "5"}} selected {{end}}>ATS 5</option>
+</select>
+<p></p>
+<select name="" id="bagian" class="w3-select w3-round w3-border">
+    <option value="0" selected disabled>Pilih Bagian...</option>
+    <option value="1" {{if eq .Bagian "1"}} selected {{end}}>Interna</option>
+    <option value="2" {{if eq .Bagian "2"}} selected {{end}}>Bedah</option>
+    <option value="3" {{if eq .Bagian "3"}} selected {{end}}>Anak</option>
+    <option value="4" {{if eq .Bagian "4"}} selected {{end}}>Obgyn</option>
+    <option value="5" {{if eq .Bagian "5"}} selected {{end}}>Saraf</option>
+    <option value="6" {{if eq .Bagian "6"}} selected {{end}}>Anestesi</option>
+    <option value="7" {{if eq .Bagian "7"}} selected {{end}}>Psikiatri</option>
+    <option value="8" {{if eq .Bagian "8"}} selected {{end}}>THT</option>
+    <option value="9" {{if eq .Bagian "9"}} selected {{end}}>Kulit/Kelamin</option>
+    <option value="10" {{if eq .Bagian "10"}} selected {{end}}>Jantung</option>
+    <option value="11" {{if eq .Bagian "11"}} selected {{end}}>Umum</option>
+    <option value="12" {{if eq .Bagian "12"}} selected {{end}}>Mata</option>
+    <option value="13" {{if eq .Bagian "13"}} selected {{end}}>MOD</option>
+    <option value="14" {{if eq .Bagian "14"}} selected {{end}}>Wing Amerta</option>
+</select>
+<p></p>
+<select name="" id="iki" class="w3-select w3-round w3-border">
+    <option value="0" selected disabled>Pilih IKI...</option>
+    <option value="1" {{if eq .GolIKI "1"}} selected {{end}}>IKI 1</option>
+    <option value="2" {{if eq .GolIKI "2"}} selected {{end}}>IKI 2</option>
+</select>
+<p></p>
+<select name="" id="shift-jaga" class="w3-select w3-round w3-border">
+    <option value="0" selected disabled>Pilih shift jaga...</option>
+    <option value="1" {{if eq .ShiftJaga "1"}} selected {{end}}>Pagi</option>
+    <option value="2" {{if eq .ShiftJaga "2"}} selected {{end}}>Sore</option>
+    <option value="3" {{if eq .ShiftJaga "3"}} selected {{end}}>Malam</option>
+</select>
+<p></p>
+
+<button class="w3-button w3-round w3-theme-d3" onclick="document.getElementById('modal-bcp').style.display='none'">Batal</button>
+<button class="w3-button w3-round w3-right w3-red" data-link="{{.LinkID}}" onclick="kirimPerubahanInputData.call(this)">Ubah</button>
+
+{{end}}
+
+{{define "detail-pasien"}}
+{{with .IDPasien}}
+<label for="">Nama Pasien</label>
+<input type="text" name="" id="edit-nama-pts" class="w3-input w3-border w3-round" value="{{.NamaPasien}}" disabled>
+<label for="">Tanggal Lahir</label>
+<input type="date" name="" id="edit-tgl-lahir" class="w3-input w3-border w3-round" value="{{strtgl .TglLahir}}" disabled>
+<label for="">Umur</label>
+<input type="text" name="" id="" class="w3-input w3-border w3-round" value="{{umur .TglLahir}}" disabled>
+<label for="">Alamat</label>
+<input type="text" name="" id="edit-alamat" class="w3-input w3-border w3-round" value="{{.Alamat}}" disabled>
+<label for="">Jenis Kelamin</label>
+<span id="jenkel-edit-span">
+{{if eq .JenKel "1"}}
+<input type="text" name="" id="jenkel-edit" class="w3-input w3-border w3-round" value="Laki - laki" disabled>
+{{else if eq .JenKel "2"}}
+<input type="text" name="" id="jenkel-edit" class="w3-input w3-border w3-round" value="Perempuan" disabled>
+{{else}}
+<input type="text" name="" id="jenkel-edit" class="w3-input w3-border w3-round" disabled>
+{{end}}
+</span>
+<span id="pts-id-edit" hidden>{{.LinkID}}</span>
+{{end}}
+<p></p>
+
+{{with .ListKunjungan}}
+<table class="w3-table-all">
+    <tr>
+        <th>No</th>
+        <th>Tanggal</th>
+        <th>Diagnosis</th>
+        <th>Dokter</th>
+    </tr>
+    {{range $m, $n := .}}
+        <tr>
+            <td>{{inc $m}}</td>
+            <td>{{tgliki $n.JamDatang}}</td>
+            <td>{{properdiag $n.Diagnosis}}</td>
+            <td>{{$n.Dokter}}</td>
+        </tr>
+    {{end}}
+</table>
+{{end}}
+{{end}}
+
